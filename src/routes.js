@@ -1,3 +1,4 @@
+const { query } = require("express");
 const express = require("express");
 const router = express.Router();
 const { Client, Pool } = require("pg");
@@ -200,6 +201,27 @@ router.get("/buscarMenor", (req, res) => {
           dados: result.rows.reduce((a, b) => {
             return a.salario < b.salario ? a : b;
           }),
+        });
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/usuariosNovos", (req, res) => {
+  try {
+    const query = `SELECT * FROM contabilidade ORDER BY data DESC`;
+    // ASC => em ordem do mais velho pro mais novo
+    // DESC => em ordem do mais novo pro mais velho
+    client.query(query, (err, result) => {
+      if (err) {
+        return res.status(404).send({
+          message: "erro no servidor",
+        });
+      } else {
+        return res.status(200).send({
+          usuarios: result.rows,
         });
       }
     });
